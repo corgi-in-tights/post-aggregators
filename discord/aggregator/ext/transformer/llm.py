@@ -29,7 +29,7 @@ class LLMWrapper:
                 "title": "<str, Club name: Title of the event maximum of 20 words>",
                 "description": "<str, description of the event maximum of 200 words>",
                 "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
-                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)'>",
+                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)' if no date given try to find any indicators like tomorrow>",
                 "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
             }},
             // if there is more than one event
@@ -37,7 +37,7 @@ class LLMWrapper:
                 "title": "<str, Club name: Title of the event maximum of 20 words>",
                 "description": "<str, description of the event maximum of 200 words>",
                 "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
-                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)'>",
+                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)' if no date given try to find any indicators like tomorrow>",
                 "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
             }},
             // and so on....
