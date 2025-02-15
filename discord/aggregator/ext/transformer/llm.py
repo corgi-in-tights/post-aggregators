@@ -22,28 +22,39 @@ class LLMWrapper:
     def parse_event_details(self, input_text, additional_data=None, timezone=None):
         prompt = f"""Extract event details from the following text and output strictly in the specified JSON format:
 
-        Text: "{input_text}"
+        Text: '{input_text}'
 
         Output format:
-        {{
-            "title": "<str, title of the event maximum of 20 words>",
-            "description": "<str, description of the event maximum of 200 words>",
-            "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
-            "date": "<str, date of the event in the format 'dayofmonth month(3 letter abbreviation) e.g. 12 Jan'>",
-            "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
-        }}
+        [
+            {{
+                "title": "<str, Club name: Title of the event maximum of 20 words>",
+                "description": "<str, description of the event maximum of 200 words>",
+                "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
+                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)' if no date given try to find any indicators like tomorrow>",
+                "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
+            }},
+            // if there is more than one event
+            {{
+                "title": "<str, Club name: Title of the event maximum of 20 words>",
+                "description": "<str, description of the event maximum of 200 words>",
+                "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
+                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)' if no date given try to find any indicators like tomorrow>",
+                "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
+            }},
+            // and so on....
+        ]
 
-        Strictly adhere to this format and provide output in JSON.
-        If you are unable to recognize any of one field, please return \"Failed to extract\"."""
+        There may be multiple events. Strictly adhere to this format and provide output only in JSON array format.
+        If you are unable to recognize a minimum of one event, please return \"Failed to extract\"."""
 
         if additional_data:
-            prompt += f"""\n\nThe event comes from an organization that: {additional_data["description"]}
+            prompt += f"""\n\nThe events come from an organization that: {additional_data["description"]}
             Today's date is {datetime.now(timezone).strftime("%d %b")}.
 
-            Here is a list of events this organization has held in the past. Ensure this new event is not a duplicate:
+            Here is a list of events this organization has held in the past. Ensure any new events are not a duplicate:
             - {"\n-".join(additional_data["past_events"])}
             If it is a duplicate, please return \"Duplicate\".
-            """
+            """"""
 
 
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
@@ -56,9 +67,6 @@ class LLMWrapper:
             completion = response.json()["choices"][0]["message"]["content"].strip()
 
             s = completion.replace(" ", "").replace("\n", "")
-
-            if s in ('{"Duplicate"}', '{"Failedtoextract"}'):
-                return None
 
             # Attempt to parse the returned string into a JSON object
             data = json.loads(completion.strip())
