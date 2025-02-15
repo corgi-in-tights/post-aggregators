@@ -1,6 +1,7 @@
 from configurable_cog import ConfigurableCog
 from discord.ext import commands
 
+from .data import add_guild_past_event, get_guild_prompting
 from .llm import LLMWrapper
 
 default_settings = {}
@@ -16,9 +17,14 @@ class Transformer(ConfigurableCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.channel.id == self.settings.target_channel_id and message.author.id in self.settings.valid_users:
-            await self.transform_message(message.content)
+        if message.channel.id == self.settings.target_channel_id and message.author.id in self.settings.valid_guilds:
+            await self.transform_message(message.content,
+                                         additional_data=get_guild_prompting(message.author.id),
+                                         timezone=self.bot.timezone)
 
-    async def transform_message(self, content):
-        data = self.llm.parse_event_details(content)
+    async def transform_message(self, content, additional_data=None, timezone=None):
+        data = self.llm.parse_event_details(content, additional_data=additional_data, timezone=timezone)
+
+        add_guild_past_event(data["guild_channel_id"], data["title"], data["date"])
+
         print(data)

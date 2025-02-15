@@ -45,6 +45,13 @@ TESTING_ADMIN_CHANNEL_ID = (
     else None
 )
 
+# construct url for database
+DATABASE_TYPE = os.getenv("DATABASE_TYPE", "sqlite")
+DATABASE_PATH = os.getenv("DATABASE_PATH", "/database.db")
+DATABASE_DRIVER = os.getenv("DATABASE_DRIVER", "aiosqlite")
+
+DATABASE_URL = f"{DATABASE_TYPE}+{DATABASE_DRIVER}://{DATABASE_PATH}"
+
 # == Extensions == #
 ENABLED_EXTENSIONS = ["ext.utils", "ext.transformer"]
 if DEV:
@@ -54,7 +61,7 @@ EXTENSION_SETTINGS: dict = {}
 
 if "ext.transformer" in ENABLED_EXTENSIONS:
     EXTENSION_SETTINGS["transformer"] = {
-        "valid_users": [1340196940310384660],
+        "valid_guilds": [1340196940310384660],
         "target_channel_id": int(os.getenv("TRANSFORMER_TARGET_CHANNEL_ID")),
         "llm_api_key": os.getenv("OPEN_AI_API_KEY"),
         "transformer_url": os.getenv("TRANSFORMER_URL"),
