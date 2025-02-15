@@ -45,7 +45,7 @@ class LLMWrapper:
         ]
 
         There may be multiple events. Strictly adhere to this format and provide output only in JSON array format.
-        If you are unable to recognize a minimum of one event, please return \"Failed to extract\"."""
+        If you are unable to recognize a minimum of one event, please return \"Failed to extract\"."""  # noqa: E501
 
         if additional_data:
             prompt += f"""\n\nThe events come from an organization that: {additional_data["description"]}
@@ -54,7 +54,7 @@ class LLMWrapper:
             Here is a list of events this organization has held in the past. Ensure any new events are not a duplicate:
             - {"\n-".join(additional_data["past_events"])}
             If it is a duplicate, please return \"Duplicate\".
-            """"""
+            """
 
 
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
@@ -65,8 +65,6 @@ class LLMWrapper:
             response = requests.post(self.url, headers=headers, json=payload, timeout=20)
             response.raise_for_status()  # Check if the request was successful
             completion = response.json()["choices"][0]["message"]["content"].strip()
-
-            s = completion.replace(" ", "").replace("\n", "")
 
             # Attempt to parse the returned string into a JSON object
             data = json.loads(completion.strip())
