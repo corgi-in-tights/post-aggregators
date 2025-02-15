@@ -6,6 +6,7 @@ import zoneinfo
 
 import discord
 import settings
+from database.setup import connect_to_db
 from discord.ext import commands
 
 discord.VoiceClient.warn_nacl = False  # annoying pop-up warning
@@ -51,6 +52,8 @@ class CustomBot(commands.Bot):
             await self.load_extension(extension)
         await self.refresh_testing_guild()
 
+        # connect to database after loading extensions
+        await connect_to_db()
 
     async def refresh_testing_guild(self):
         if self.testing_guild_id:
