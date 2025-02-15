@@ -6,7 +6,6 @@ import zoneinfo
 
 import discord
 import settings
-from database.setup import connect_to_db
 from discord.ext import commands
 
 discord.VoiceClient.warn_nacl = False  # annoying pop-up warning

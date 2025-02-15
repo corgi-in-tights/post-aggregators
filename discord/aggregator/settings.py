@@ -46,8 +46,16 @@ TESTING_ADMIN_CHANNEL_ID = (
 )
 
 # == Extensions == #
-ENABLED_EXTENSIONS = ["ext.transformer"]
+ENABLED_EXTENSIONS = ["ext.utils", "ext.transformer"]
 if DEV:
     ENABLED_EXTENSIONS.append("ext.development")
 
 EXTENSION_SETTINGS: dict = {}
+
+if "ext.transformer" in ENABLED_EXTENSIONS:
+    EXTENSION_SETTINGS["transformer"] = {
+        "valid_users": [1340196940310384660],
+        "target_channel_id": int(os.getenv("TRANSFORMER_TARGET_CHANNEL_ID")),
+        "llm_api_key": os.getenv("OPEN_AI_API_KEY"),
+        "transformer_url": os.getenv("TRANSFORMER_URL"),
+    }
