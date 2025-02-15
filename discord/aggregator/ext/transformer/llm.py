@@ -19,20 +19,32 @@ class LLMWrapper:
         }
 
     def parse_event_details(self, input_text):
-        prompt = f"""Extract event details from the following text and output strictly in the specified JSON format:
+        prompt = f"""Extract event details from the following text and output strictly in the specified JSON array format:
 
-        Text: "{input_text}"
+        Text: '{input_text}'
 
         Output format:
-        {{
-            "title": "<str, title of the event maximum of 20 words>",
-            "description": "<str, description of the event maximum of 200 words>",
-            "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
-            "date": "<str, date of the event in the format 'dayofmonth month(3 letter abbreviation) e.g. 12 Jan'>",
-            "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
-        }}
+        [
+            {{
+                "title": "<str, Club name: Title of the event maximum of 20 words>",
+                "description": "<str, description of the event maximum of 200 words>",
+                "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
+                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)'>",
+                "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
+            }},
+            // if there is more than one event
+            {{
+                "title": "<str, Club name: Title of the event maximum of 20 words>",
+                "description": "<str, description of the event maximum of 200 words>",
+                "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
+                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)'>",
+                "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
+            }},
+            // and so on....
+        ]
 
-        Strictly adhere to this format and provide output only in JSON."""
+        There will always be at least one event, but there may be multiple events. Strictly adhere to this format and provide output only in JSON array format."""
+
 
 
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
