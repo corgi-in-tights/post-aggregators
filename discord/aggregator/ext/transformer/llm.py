@@ -30,7 +30,7 @@ class LLMWrapper:
                 "title": "<str, Club name: Title of the event maximum of 20 words>",
                 "description": "<str, description of the event maximum of 200 words>",
                 "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
-                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)' if no date given try to find any indicators like tomorrow>",
+                "date": "<str, date of the event in the format 'YYYY-MM-DD'>",
                 "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
             }},
             // if there is more than one event
@@ -38,7 +38,7 @@ class LLMWrapper:
                 "title": "<str, Club name: Title of the event maximum of 20 words>",
                 "description": "<str, description of the event maximum of 200 words>",
                 "location": "<str, room of the event in the format buildingroom_number e.g. MN2010>",
-                "date": "<str, date of the event in the format 'day month(3 letter abbreviation)' if no date given try to find any indicators like tomorrow>",
+                "date": "<str,  date of the event in the format 'YYYY-MM-DD'>",
                 "time": "<str, time of the event in the format 'hh:mm - hh:mm'>"
             }},
             // and so on....
@@ -47,9 +47,10 @@ class LLMWrapper:
         There may be multiple events. Strictly adhere to this format and provide output only in JSON array format.
         If you are unable to recognize a minimum of one event, please return \"Failed to extract\"."""  # noqa: E501
 
+        if timezone:
+            prompt += f"\nToday's date is {datetime.now(timezone).strftime('%d %b')}.\n"
         if additional_data:
             prompt += f"""\n\nThe events come from an organization that: {additional_data["description"]}
-            Today's date is {datetime.now(timezone).strftime("%d %b")}.
 
             Here is a list of events this organization has held in the past. Ensure any new events are not a duplicate:
             - {"\n-".join(additional_data["past_events"])}
@@ -68,10 +69,6 @@ class LLMWrapper:
 
             # Attempt to parse the returned string into a JSON object
             data = json.loads(completion.strip())
-            for key in ["title", "description", "location", "date", "time"]:
-                if key not in data:
-                    logger.error("Failed to extract %s from the response %s.", key, data)
-                    return None
             return data  # noqa: TRY300
 
         except requests.exceptions.RequestException as e:

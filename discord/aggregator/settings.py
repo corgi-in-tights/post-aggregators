@@ -65,4 +65,5 @@ if "ext.transformer" in ENABLED_EXTENSIONS:
         "target_channel_id": int(os.getenv("TRANSFORMER_TARGET_CHANNEL_ID")),
         "llm_api_key": os.getenv("OPEN_AI_API_KEY"),
         "transformer_url": os.getenv("TRANSFORMER_URL"),
+        "transformer_api_key": os.getenv("TRANSFORMER_API_KEY"),
     }
