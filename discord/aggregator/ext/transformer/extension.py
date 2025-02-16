@@ -1,5 +1,6 @@
 from configurable_cog import ConfigurableCog
 from discord.ext import commands
+import aiohttp
 
 from .data import add_guild_past_event, get_guild_prompting
 from .llm import LLMWrapper
@@ -26,5 +27,13 @@ class Transformer(ConfigurableCog):
         data = self.llm.parse_event_details(content, additional_data=additional_data, timezone=timezone)
 
         add_guild_past_event(data["guild_channel_id"], data["title"], data["date"])
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(self.settings.transformer_url, json=data) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    print("Response from transformer:", result)
+                else:
+                    print("Failed to send data to transformer:", response.status)
 
         print(data)
